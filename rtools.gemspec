@@ -21,6 +21,8 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.glob("lib/rtools/**/*") +
+               Dir.glob("app/**/*") +
+               Dir.glob("config/**/*") +
                Dir.glob("sig/**/*") +
                Dir.glob("bin/*") +
                %w[README.md LICENSE.txt CHANGELOG.md lib/rtools.rb]

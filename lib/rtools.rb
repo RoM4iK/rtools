@@ -13,6 +13,7 @@ end
 
 begin
   require "rails"
+  require_relative "rtools/engine"
   require_relative "rtools/performance_profiler_middleware"
   require_relative "rtools/railtie"
 rescue LoadError

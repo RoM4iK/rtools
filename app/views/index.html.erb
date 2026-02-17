@@ -1,0 +1,110 @@
+<div class="max-w-7xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Page Performance Profiles</h1>
+    <%= link_to "🔄 Refresh", rtools.performance_profiles_path, class: "btn btn-ghost btn-sm" %>
+  </div>
+
+  <% if @message.present? %>
+    <div class="alert alert-info mb-6">
+      <span><%= @message %></span>
+    </div>
+  <% end %>
+
+  <% if @pages.any? %>
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <div class="flex gap-4 mb-4 flex-wrap">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Sort by:</span>
+            </label>
+            <%= form_with url: rtools.performance_profiles_path, method: :get, class: "flex gap-2" do |f| %>
+              <%= f.select :sort, options_for_select([["Slowest First", "mean_desc"], ["Fastest First", "mean_asc"], ["URL", "url"], ["Request Count", "count"], ["Most SQL Time", "sql_time"]], params[:sort] || "mean_desc"), {}, class: "select select-bordered select-sm" %>
+              <%= f.submit "Sort", class: "btn btn-primary btn-sm" %>
+              <%= link_to "Clear", rtools.performance_profiles_path, class: "btn btn-ghost btn-sm" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table table-zebra table-sm">
+            <thead>
+              <tr>
+                <th>Page URL</th>
+                <th class="text-right">Total Requests</th>
+                <th class="text-right">Mean Load Time (ms)</th>
+                <th class="text-right">Median Load Time (ms)</th>
+                <th class="text-right">P95 Load Time (ms)</th>
+                <th class="text-right">Mean SQL Time (ms)</th>
+                <th class="text-right">Avg SQL Queries</th>
+                <th class="text-center">Latest Profile</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @pages.each do |page| %>
+                <tr class="<%= page[:mean_load_time] > 1000 ? "bg-error bg-opacity-10" : (page[:mean_load_time] > 500 ? "bg-warning bg-opacity-10" : "") %>">
+                  <td>
+                    <%= link_to rtools.performance_profile_path(page[:page_slug].sub(/\.json$/, '')), class: "link link-hover" do %>
+                      <code class="text-xs"><%= page[:url] %></code>
+                    <% end %>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= page[:profile_count] %></span>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(page[:mean_load_time], precision: 2) %></span>
+                    <% if page[:mean_load_time] > 1000 %>
+                      <span class="badge badge-error badge-xs ml-1">SLOW</span>
+                    <% elsif page[:mean_load_time] > 500 %>
+                      <span class="badge badge-warning badge-xs ml-1">MEDIUM</span>
+                    <% end %>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(page[:median_load_time], precision: 2) %></span>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(page[:p95_load_time], precision: 2) %></span>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(page[:mean_sql_time], precision: 2) %></span>
+                    <% if page[:mean_sql_time] > 500 %>
+                      <span class="badge badge-warning badge-xs ml-1">HIGH</span>
+                    <% end %>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(page[:mean_sql_queries], precision: 1) %></span>
+                  </td>
+                  <td class="text-center">
+                    <span class="text-xs"><%= Time.parse(page[:latest_timestamp]).strftime("%Y-%m-%d %H:%M") %></span>
+                  </td>
+                  <td class="text-center">
+                    <div class="flex gap-1 justify-center">
+                      <%= link_to "View", rtools.performance_profile_path(page[:page_slug].sub(/\.json$/, '')), class: "btn btn-ghost btn-xs" %>
+                      <div data-controller="copy" data-copy-text-value="tmp/performance_profiles/<%= page[:page_slug] %>.json">
+                        <button class="btn btn-ghost btn-xs" data-copy-target="button" data-action="click->copy#copy" type="button" title="Copy project path">
+                          📋
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <div>
+        <h3 class="font-bold">No performance profiles yet</h3>
+        <p>Visit some pages in your application to start collecting performance data.</p>
+      </div>
+    </div>
+  <% end %>
+</div>

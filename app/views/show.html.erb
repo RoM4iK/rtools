@@ -1,0 +1,146 @@
+<% content_for :title, "#{@url} - Performance Profile" %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <%= link_to "← Back to all profiles", rtools.performance_profiles_path, class: "link link-hover text-sm mb-2 block" %>
+      <h1 class="text-3xl font-bold">Performance Profile</h1>
+      <p class="text-sm text-gray-600">
+        <code class="bg-base-200 px-2 py-1 rounded"><%= @url %></code>
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <div data-controller="copy" data-copy-text-value="tmp/performance_profiles/<%= @page_slug %>.json">
+        <button class="btn btn-ghost btn-sm" data-copy-target="button" data-action="click->copy#copy" type="button" title="Copy project path">
+          📋 Copy Path
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <% if @message.present? %>
+    <div class="alert alert-info mb-6">
+      <span><%= @message %></span>
+    </div>
+  <% end %>
+
+  <% if @profiles.any? %>
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h2 class="card-title">Performance Statistics</h2>
+        <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
+          <div class="stat">
+            <div class="stat-title">Total Requests</div>
+            <div class="stat-value text-2xl"><%= @profile_count %></div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Mean Load Time</div>
+            <div class="stat-value text-2xl">
+              <%= number_with_precision(@profiles.map { |p| p[:total_time] }.sum / @profiles.count.to_f, precision: 2) %>
+              <span class="text-sm font-normal">ms</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Mean SQL Time</div>
+            <div class="stat-value text-2xl">
+              <%= number_with_precision(@profiles.map { |p| p[:sql_time] }.sum / @profiles.count.to_f, precision: 2) %>
+              <span class="text-sm font-normal">ms</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Avg SQL Queries</div>
+            <div class="stat-value text-2xl">
+              <%= (@profiles.map { |p| p[:sql_queries]&.count || 0 }.sum / @profiles.count.to_f).round(1) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table table-zebra table-sm">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th class="text-right">Load Time (ms)</th>
+                <th class="text-right">SQL Time (ms)</th>
+                <th class="text-right">SQL Queries</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @profiles.each_with_index do |profile, index| %>
+                <tr class="<%= profile[:total_time] > 1000 ? "bg-error bg-opacity-10" : (profile[:total_time] > 500 ? "bg-warning bg-opacity-10" : "") %>">
+                  <td>
+                    <span class="font-mono text-xs"><%= Time.parse(profile[:timestamp]).strftime("%Y-%m-%d %H:%M:%S") %></span>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(profile[:total_time], precision: 2) %></span>
+                    <% if profile[:total_time] > 1000 %>
+                      <span class="badge badge-error badge-xs ml-1">SLOW</span>
+                    <% elsif profile[:total_time] > 500 %>
+                      <span class="badge badge-warning badge-xs ml-1">MEDIUM</span>
+                    <% end %>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= number_with_precision(profile[:sql_time], precision: 2) %></span>
+                  </td>
+                  <td class="text-right">
+                    <span class="font-mono"><%= profile[:sql_queries]&.count || 0 %></span>
+                  </td>
+                  <td class="text-center">
+                    <div class="flex gap-1 justify-center">
+                      <% if profile[:sql_queries]&.any? %>
+                        <button class="btn btn-ghost btn-xs" type="button" onclick="document.getElementById('queries-<%= index %>').classList.toggle('hidden')">
+                          Show SQL
+                        </button>
+                      <% end %>
+                      <div data-controller="copy" data-copy-text-value="<%= profile.to_json %>">
+                        <button class="btn btn-ghost btn-xs" data-copy-target="button" data-action="click->copy#copy" type="button" title="Copy execution JSON">
+                          📋
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <% if profile[:sql_queries]&.any? %>
+                  <tr class="hidden" id="queries-<%= index %>">
+                    <td colspan="5">
+                      <div class="bg-base-200 p-4 rounded">
+                        <h4 class="font-bold mb-2 text-sm">SQL Queries (<%= profile[:sql_queries].count %> total)</h4>
+                        <div class="space-y-2">
+                          <% profile[:sql_queries].each_with_index do |query, q_index| %>
+                            <div class="bg-base-100 p-2 rounded border border-base-300">
+                              <div class="flex justify-between items-start mb-1">
+                                <span class="text-xs font-semibold text-primary">Query <%= q_index + 1 %></span>
+                                <span class="badge badge-sm">
+                                  <%= number_with_precision(query[:duration], precision: 2) %>
+                                  ms
+                                </span>
+                              </div>
+                              <pre class="text-xs overflow-x-auto whitespace-pre-wrap font-mono"><%= query[:sql] %></pre>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <div>
+        <h3 class="font-bold">No performance data</h3>
+        <p>Visit this page to start collecting performance profiles.</p>
+      </div>
+    </div>
+  <% end %>
+</div>
