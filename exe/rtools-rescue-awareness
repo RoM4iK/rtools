@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Run rescue awareness check on the codebase
+# This script validates that all rescue blocks have awareness comments
+
+require "fileutils"
+require "rtools"
+
+ROOT = Dir.pwd
+
+puts "🔍 Running Rescue Awareness Check..."
+puts "=" * 80
+puts
+
+begin
+  # Check app directory by default, or allow custom directories
+  directories = ARGV.empty? ? ["app"] : ARGV
+  Rtools::RescueAwarenessChecker.check_all_files!(directories)
+  puts "✅ All rescue blocks have awareness comments!"
+  puts
+  exit 0
+rescue => e
+  puts e.message
+  exit 1
+end
