@@ -20,14 +20,20 @@
    - Includes standalone checker: `Rtools::RescueAwarenessChecker`
    - Executable: `bin/rtools-rescue-awareness`
 
-2. **Performance Profiler Middleware**
-   - Location: `lib/rtools/performance_profiler_middleware.rb`
-   - Automatic Rails middleware registration via Railtie
-   - Profiles request timing, SQL queries, and query details
-   - Stores last 5 requests per endpoint in `tmp/performance_profiles`
-   - "Invisibility cloak" - exceptions don't show middleware in backtrace
-   - Skips assets and static files automatically
-   - Configurable via `config.rtools.performance_profiler`
+2. **Performance Profiler**
+   - **Middleware:** `lib/rtools/performance_profiler_middleware.rb`
+     - Automatic Rails middleware registration via Railtie
+     - Profiles request timing, SQL queries, and query details
+     - Stores last 5 requests per endpoint in `tmp/performance_profiles`
+     - "Invisibility cloak" - exceptions don't show middleware in backtrace
+     - Skips assets and static files automatically
+     - Configurable via `config.rtools.performance_profiler`
+   - **Web UI:** Development-only interface at `/dev/performance_profiles`
+     - View all profiles with aggregate statistics
+     - Sort by URL, load time, SQL time, request count
+     - Visual indicators for slow pages (color-coded)
+     - Per-page detail view with individual request profiles
+   - **Note:** Controller, views, and services remain in the app (not extracted yet)
 
 ### Installation
 
@@ -68,13 +74,7 @@ Custom/AwarenessRescue:
 
 Generic tools for improving code quality and maintainability:
 
-#### 1. HAML Validator
-- **Location in app:** `lib/tasks/haml.rake`
-- **Purpose:** Validate all HAML templates for syntax errors
-- **Generic value:** Useful for any Rails app using HAML
-- **Complexity:** Low
-
-#### 2. Orphaned Views Analyzer
+#### 1. Orphaned Views Analyzer
 - **Location in app:** `lib/tasks/views.rake`
 - **Purpose:** Identify views without corresponding controller actions
 - **Generic value:** Helps keep codebases clean
@@ -132,6 +132,16 @@ The following are **application-specific** and will remain in the main app:
 - `lib/tasks/nats.rake` - App-specific NATS messaging setup
 - `lib/tasks/import.rake` - App-specific data import workflows
 - `scripts/export_pr.rb` - Custom PR export workflow
+
+### Performance Profiler Web UI
+- `app/controllers/dev/performance_profiles_controller.rb` - Web interface for viewing profiles
+- `app/views/dev/performance_profiles/` - HTML templates
+- `app/services/dev/performance_profile_results_service.rb` - Profile aggregation service
+- `app/services/dev/performance_profile_storage_service.rb` - Profile storage service
+- **Reason:** The middleware is extracted, but the web UI requires app-specific routing and styling
+
+### Not Needed
+- `lib/tasks/haml.rake` - HAML validator (not needed for general use)
 
 ---
 
@@ -204,8 +214,8 @@ bundle exec rubocop
 
 ## Versioning Strategy
 
-- **v0.1.0** - Initial release with rescue awareness and performance profiler
-- **v0.2.0** - Planned: Code quality tools (HAML validator, orphaned views)
+- **v0.1.0** - Initial release with rescue awareness and performance profiler middleware
+- **v0.2.0** - Planned: Code quality tools (orphaned views analyzer)
 - **v0.3.0** - Planned: Documentation tools
 - **v1.0.0** - Stable release with comprehensive tooling
 
