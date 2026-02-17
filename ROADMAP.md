@@ -20,20 +20,14 @@
    - Includes standalone checker: `Rtools::RescueAwarenessChecker`
    - Executable: `bin/rtools-rescue-awareness`
 
-2. **Performance Profiler**
-   - **Middleware:** `lib/rtools/performance_profiler_middleware.rb`
-     - Automatic Rails middleware registration via Railtie
-     - Profiles request timing, SQL queries, and query details
-     - Stores last 5 requests per endpoint in `tmp/performance_profiles`
-     - "Invisibility cloak" - exceptions don't show middleware in backtrace
-     - Skips assets and static files automatically
-     - Configurable via `config.rtools.performance_profiler`
-   - **Web UI:** Development-only interface at `/dev/performance_profiles`
-     - View all profiles with aggregate statistics
-     - Sort by URL, load time, SQL time, request count
-     - Visual indicators for slow pages (color-coded)
-     - Per-page detail view with individual request profiles
-   - **Note:** Controller, views, and services remain in the app (not extracted yet)
+2. **Performance Profiler Middleware** (v0.1.0)
+   - Automatic Rails middleware registration via Railtie
+   - Profiles request timing, SQL queries, and query details
+   - Stores last 5 requests per endpoint in `tmp/performance_profiles`
+   - "Invisibility cloak" - exceptions don't show middleware in backtrace
+   - Skips assets and static files automatically
+   - Configurable via `config.rtools.performance_profiler`
+   - **Note:** Web UI (controller, views, services) to be extracted in v0.2.0
 
 ### Installation
 
@@ -70,9 +64,33 @@ Custom/AwarenessRescue:
 
 ## Future Extraction Candidates
 
-### Phase 2: Code Quality Tools (Planned)
+### Phase 2: Performance Profiler Web UI (Planned)
 
-Generic tools for improving code quality and maintainability:
+Complete the performance profiler with the web interface:
+
+#### Components to Extract:
+- **Controller:** `app/controllers/dev/performance_profiles_controller.rb`
+  - Index action with sorting (URL, load time, SQL time, count)
+  - Show action for per-page detail view
+  - Development-only access control
+- **Views:** `app/views/dev/performance_profiles/`
+  - Index page with profile list and statistics
+  - Show page with individual request details
+  - Color-coded indicators (slow/medium/fast)
+  - Responsive HTML tables
+- **Services:**
+  - `PerformanceProfileResultsService` - Aggregate statistics (mean, median, P95)
+  - `PerformanceProfileStorageService` - JSON file management
+- **Routes:** Mounted at `/dev/performance_profiles`
+
+#### Generic Value:
+- Provides immediate visibility into Rails app performance
+- No business logic - pure performance data visualization
+- Useful for any Rails application in development
+
+**Estimated Complexity:** Medium (needs route mounting, view template system)
+
+### Phase 3: Code Quality Tools (Planned)
 
 #### 1. Orphaned Views Analyzer
 - **Location in app:** `lib/tasks/views.rake`
@@ -80,7 +98,7 @@ Generic tools for improving code quality and maintainability:
 - **Generic value:** Helps keep codebases clean
 - **Complexity:** Medium
 
-### Phase 3: Documentation Tools (Planned)
+### Phase 4: Documentation Tools (Planned)
 
 Tools for generating and managing documentation:
 
@@ -96,7 +114,7 @@ Tools for generating and managing documentation:
 - **Generic value:** Useful for any Rails app with feature specs
 - **Complexity:** High
 
-### Phase 4: Developer Utilities (Planned)
+### Phase 5: Developer Utilities (Planned)
 
 General-purpose development workflow improvements:
 
@@ -132,16 +150,6 @@ The following are **application-specific** and will remain in the main app:
 - `lib/tasks/nats.rake` - App-specific NATS messaging setup
 - `lib/tasks/import.rake` - App-specific data import workflows
 - `scripts/export_pr.rb` - Custom PR export workflow
-
-### Performance Profiler Web UI
-- `app/controllers/dev/performance_profiles_controller.rb` - Web interface for viewing profiles
-- `app/views/dev/performance_profiles/` - HTML templates
-- `app/services/dev/performance_profile_results_service.rb` - Profile aggregation service
-- `app/services/dev/performance_profile_storage_service.rb` - Profile storage service
-- **Reason:** The middleware is extracted, but the web UI requires app-specific routing and styling
-
-### Not Needed
-- `lib/tasks/haml.rake` - HAML validator (not needed for general use)
 
 ---
 
@@ -214,9 +222,10 @@ bundle exec rubocop
 
 ## Versioning Strategy
 
-- **v0.1.0** - Initial release with rescue awareness and performance profiler middleware
-- **v0.2.0** - Planned: Code quality tools (orphaned views analyzer)
-- **v0.3.0** - Planned: Documentation tools
+- **v0.1.0** - Rescue awareness cop + performance profiler middleware
+- **v0.2.0** - Planned: Performance profiler web UI (controller, views, services)
+- **v0.3.0** - Planned: Code quality tools (orphaned views analyzer)
+- **v0.4.0** - Planned: Documentation tools
 - **v1.0.0** - Stable release with comprehensive tooling
 
 Pre-1.0 versions may include breaking changes. Feedback from early adopters will guide API improvements.
