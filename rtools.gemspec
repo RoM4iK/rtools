@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies - use pessimistic version constraint for better stability
   spec.add_dependency "rubocop", "~> 1.0"
-  spec.add_dependency "rails", "~> 6.0"
+  spec.add_dependency "rails", ">= 6.0"
 
   # Development dependencies
   spec.add_development_dependency "rake", "~> 13.0"
