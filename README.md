@@ -134,10 +134,10 @@ Or run via executable:
 
 ```bash
 # Check all files in app/
-exe/rtools-rescue-awareness
+bin/rtools-rescue-awareness
 
 # Check specific directories
-exe/rtools-rescue-awareness app lib
+bin/rtools-rescue-awareness app lib
 ```
 
 ## Development

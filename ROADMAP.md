@@ -1,17 +1,24 @@
-# Devtools Gem - Roadmap
+# Rtools Gem - Roadmap
+
+## Vision
+
+**Rtools** is a collection of generic, reusable developer tools for Rails applications. The focus is on extracting tools that:
+
+1. Are **generic** - not tied to specific business logic or domain
+2. Provide **immediate value** to any Rails application
+3. Have **clean boundaries** - minimal dependencies on app architecture
+4. Are **well-tested** - comprehensive test coverage
 
 ## Current Version: v0.1.0
 
 ### What's Included
 
-This initial release includes essential developer tools extracted from a production Rails application:
-
 1. **RuboCop Cop: Rescue Awareness**
    - Location: `lib/rtools/rubocop/cop/custom/awareness_rescue.rb`
    - Enforces documented rescue blocks to prevent careless exception handling
    - Supports inline and line-before awareness comments
-   - Includes standalone checker: `Devtools::RescueAwarenessChecker`
-   - Executable: `exe/rtools-rescue-awareness`
+   - Includes standalone checker: `Rtools::RescueAwarenessChecker`
+   - Executable: `bin/rtools-rescue-awareness`
 
 2. **Performance Profiler Middleware**
    - Location: `lib/rtools/performance_profiler_middleware.rb`
@@ -22,22 +29,11 @@ This initial release includes essential developer tools extracted from a product
    - Skips assets and static files automatically
    - Configurable via `config.rtools.performance_profiler`
 
-3. **Comprehensive Test Suite**
-   - RSpec tests for all components
-   - Test coverage for RuboCop cop, middleware, and checker
-
 ### Installation
 
-Add this line to your application's Gemfile:
-
 ```ruby
-gem 'rtools'
-```
-
-And then execute:
-
-```bash
-$ bundle install
+# Gemfile
+gem "rtools", github: "RoM4iK/rtools", tag: "v0.1.0"
 ```
 
 ### Configuration
@@ -48,8 +44,8 @@ In `config/application.rb`:
 
 ```ruby
 config.rtools.performance_profiler.enabled = true
-config.rtools.performance_profiler.storage_path = 'tmp/performance_profiles'
-config.rtools.performance_profiler.skip_paths = ['/assets', '/rails']
+config.rtools.performance_profiler.storage_path = "tmp/performance_profiles"
+config.rtools.performance_profiler.skip_paths = ["/assets", "/rails"]
 ```
 
 #### RuboCop Cop
@@ -66,151 +62,104 @@ Custom/AwarenessRescue:
 
 ---
 
-## Remaining Tools in Application (Future Extraction Phases)
+## Future Extraction Candidates
 
-The following tools remain in the main application and will be extracted in future phases:
+### Phase 2: Code Quality Tools (Planned)
 
-### Rake Tasks (Future Phase: Documentation & Changelog Tools)
+Generic tools for improving code quality and maintainability:
 
-Location: `lib/tasks/`
+#### 1. HAML Validator
+- **Location in app:** `lib/tasks/haml.rake`
+- **Purpose:** Validate all HAML templates for syntax errors
+- **Generic value:** Useful for any Rails app using HAML
+- **Complexity:** Low
 
-1. **apartment.rake** - Multi-tenant database management tasks
-2. **changelog.rake** - Changelog generation and management
-3. **device_commands.rake** - Device control command utilities
-4. **docs.rake** - Documentation screenshot generation
-5. **documentation.rake** - Documentation build and packaging
-6. **haml.rake** - HAML template conversion tasks
-7. **import.rake** - Data import utilities
-8. **javascript.rake** - JavaScript build tasks
-9. **nats.rake** - NATS messaging system tasks
-10. **views.rake** - View template management
+#### 2. Orphaned Views Analyzer
+- **Location in app:** `lib/tasks/views.rake`
+- **Purpose:** Identify views without corresponding controller actions
+- **Generic value:** Helps keep codebases clean
+- **Complexity:** Medium
 
-### Tenant-Specific Libraries (OUT OF SCOPE - Stay in App)
+### Phase 3: Documentation Tools (Planned)
 
-These are application-specific and should remain in the app:
+Tools for generating and managing documentation:
 
-1. **lib/active_storage/service/tenant_aware_storage_service.rb**
-   - Custom ActiveStorage service for multi-tenant file handling
-   - Tightly integrated with apartment gem and tenant schema architecture
-   - Contains business logic specific to this application's tenancy model
+#### 1. Changelog Generator
+- **Location in app:** `scripts/generate_changelog_context.rb`, `lib/tasks/changelog.rake`
+- **Purpose:** Automated changelog generation from git history
+- **Generic value:** Standardized changelog workflow
+- **Complexity:** Medium
 
-2. **lib/logidze_tenant_support.rb**
-   - Logidze audit log extensions for tenant-aware versioning
-   - Application-specific audit trail implementation
-   - Depends on custom tenant context
+#### 2. Documentation Screenshot Generator
+- **Location in app:** `lib/tasks/docs.rake`, `scripts/generate_docs.js`
+- **Purpose:** Automated screenshot generation for feature documentation
+- **Generic value:** Useful for any Rails app with feature specs
+- **Complexity:** High
 
-### Bin Scripts (Future Phase: Developer Utilities)
+### Phase 4: Developer Utilities (Planned)
 
-Location: `bin/`
+General-purpose development workflow improvements:
 
-1. **parallel_specs** - Parallel test execution wrapper
-   - Custom configuration for parallel_tests gem
-   - Handles tenant-specific test database setup
+#### 1. Parallel Specs Helper
+- **Location in app:** `bin/parallel_specs`
+- **Purpose:** Wrapper for parallel_tests with custom configuration
+- **Generic value:** Faster test execution
+- **Complexity:** Medium (needs abstraction for non-tenant apps)
 
-2. **bundle**, **rails**, **rake** - Custom wrapper scripts
-   - Application-specific environment setup
-
-3. **brakeman** - Security scanner integration
-
-4. **jobs** - Background job management
-
-5. **docker-entrypoint** - Container initialization
-
-6. **thrust** - Thrust RPC framework integration
-
-7. **tapioca**, **tapioca-skip-ssl** - Type generation tools
-
-### Documentation Scripts (Future Phase: Documentation Tools)
-
-These scripts generate and manage project documentation:
-
-1. **bin/generate_changelog_context** - Changelog context generation
-2. **bin/generate_docs** - Main documentation generator
-3. **bin/pack_docs** - Documentation packaging for deployment
-4. **bin/generate_features_doc** - Features documentation
-5. **bin/update-deployment-version** - Version tracking
+#### 2. Git Workflow Helpers
+- **Location in app:** Various scripts
+- **Purpose:** Common git-based development workflows
+- **Generic value:** Standardized development processes
+- **Complexity:** Low
 
 ---
 
-## Future Phases
+## Out of Scope (Will NOT be Extracted)
 
-### Phase 4: Documentation & Changelog Tools (Planned)
+The following are **application-specific** and will remain in the main app:
 
-Extract documentation generation tooling into reusable gem components:
+### Tenant-Specific Tools
+- `lib/tasks/apartment.rake` - Multi-tenant database management (apartment gem specific)
+- `lib/active_storage/service/tenant_aware_storage_service.rb` - Custom tenant-aware storage
+- `lib/logidze_tenant_support.rb` - Tenant-specific audit logging
 
-**Components:**
-- Documentation screenshot generation framework
-- Changelog management system
-- Features documentation generator
-- Documentation packaging utilities
+### Business Logic Tools
+- `lib/tasks/device_commands.rake` - Hardware-specific device control
+- `scripts/copy_bank_logos.rb` - Business-specific asset management
+- `scripts/generate_billing_report.rb` - Domain-specific reporting
 
-**Benefits:**
-- Reusable documentation workflow for Rails apps
-- Standardized screenshot generation for feature specs
-- Automated changelog management
-
-**Estimated Complexity:** Medium
-**Dependencies:** RSpec, Rails, likely image processing libraries
-
-### Phase 5: Developer Utilities (Planned)
-
-Extract general-purpose developer utilities:
-
-**Components:**
-- Parallel specs wrapper with tenant support
-- Custom bin scripts for common tasks
-- Test database management utilities
-- Background job management helpers
-
-**Benefits:**
-- Faster test execution in multi-tenant Rails apps
-- Standardized development workflows
-- Reusable tenant testing patterns
-
-**Estimated Complexity:** High (tenant-specific logic needs abstraction)
+### Application-Specific Integrations
+- `lib/tasks/nats.rake` - App-specific NATS messaging setup
+- `lib/tasks/import.rake` - App-specific data import workflows
+- `scripts/export_pr.rb` - Custom PR export workflow
 
 ---
 
-## Architectural Decisions
+## Design Principles
 
-### Why Tenant Tools Stay in the App
+### 1. Generic Over App-Specific
 
-The tenant-aware libraries (`tenant_aware_storage_service.rb` and `logidze_tenant_support.rb`) are **not** being extracted because:
+Only extract tools that work across different Rails applications without modification. Tools with business logic or domain-specific patterns stay in the app.
 
-1. **Business Logic Coupling**: These contain application-specific tenant architecture decisions
-2. **Schema Integration**: Deep integration with apartment gem and our custom tenant schema patterns
-3. **Domain Knowledge**: Encapsulate multi-tenancy patterns specific to this application's domain
-4. **Maintenance Risk**: Extracting would make future tenant architecture changes more difficult
+### 2. Minimal Dependencies
 
-### Why These Tools First (Phase 1-3)
+Prefer tools with few dependencies. Tools requiring complex setup or specific architectural patterns are lower priority.
 
-The initial tools were chosen because they are:
+### 3. Clear Boundaries
 
-1. **Generic**: No application-specific business logic
-2. **High Value**: Immediate benefit to any Rails application
-3. **Low Coupling**: Minimal dependencies on app architecture
-4. **Well Tested**: Already have comprehensive test coverage
-5. **Clear Boundaries**: Easy to extract without breaking changes
+Tools should have well-defined interfaces and clear responsibilities. Avoid extracting tightly coupled code.
 
-### Namespace Design
+### 4. Test Coverage
 
-All tools are namespaced under `Devtools` module to:
-- Prevent naming conflicts with application code
-- Provide clear gem ownership
-- Allow for future tool additions without namespace pollution
-- Follow Ruby gem conventions
+Only extract tools that have comprehensive tests. Tests provide confidence that the extracted code works correctly.
 
-### Versioning Strategy
+### 5. Namespace Safety
 
-Starting at v0.1.0 (not v1.0.0) because:
-- Initial public release
-- API may evolve based on community feedback
-- Follows semantic versioning principles for pre-1.0 releases
-- Allows for breaking changes while adopting early
+All tools namespaced under `Rtools` module to prevent conflicts with application code.
 
 ---
 
-## Migration Guide
+## Migration Guide for v0.1.0
 
 For applications currently using these tools from the main app:
 
@@ -218,108 +167,60 @@ For applications currently using these tools from the main app:
 
 ```ruby
 # Gemfile
-gem 'rtools', '~> 0.1.0'
+gem "rtools", github: "RoM4iK/rtools", tag: "v0.1.0"
 ```
 
-### Step 2: Update Requires
-
-Remove old requires and add gem requires:
-
-```ruby
-# Remove these requires from your codebase:
-# require 'rubocop/cop/custom/awareness_rescue'
-# require 'dev/performance_profiler_middleware'
-# require_relative 'spec/support/rescue_awareness_checker'
-
-# Gem auto-loads via:
-# require 'rtools'
-```
-
-### Step 3: Update RuboCop Configuration
+### Step 2: Update RuboCop Configuration
 
 ```yaml
 # .rubocop.yml
 require:
   - rtools  # Instead of custom path
 
-# Cop is now available as:
-# Devtools::RuboCop::Cop::Custom::AwarenessRescue
+Custom/AwarenessRescue:
+  Enabled: true
 ```
 
-### Step 4: Update Middleware Configuration
-
-No changes needed - Railtie automatically registers middleware in development.
-
-If you had custom middleware configuration:
-
-```ruby
-# Remove from config/application.rb or config/environments/development.rb:
-# config.middleware.insert_before ActionDispatch::Static, Dev::PerformanceProfilerMiddleware
-
-# Replace with gem configuration:
-config.rtools.performance_profiler.enabled = true
-```
-
-### Step 5: Update Executable References
-
-```bash
-# Old:
-bin/rescue_awareness
-
-# New:
-exe/rtools-rescue-awareness
-# Or if installed via gem:
-rtools-rescue-awareness
-```
-
-### Step 6: Update Test Helpers
-
-```ruby
-# Old:
-require 'spec/support/rescue_awareness_checker'
-
-# New (gem auto-loads):
-require 'rtools'
-
-RSpec.configure do |config|
-  config.before(:suite) do
-    Devtools::RescueAwarenessChecker.check_all_files!
-  end
-end
-```
-
-### Step 7: Remove Extracted Files
+### Step 3: Remove Extracted Files
 
 After confirming everything works:
 
 ```bash
 # Remove from your app:
 rm lib/rubocop/cop/custom/awareness_rescue.rb
-rm lib/dev/performance_profiler_middleware.rb
 rm bin/rescue_awareness
-rm spec/support/rescue_awareness_checker.rb
-
-# Update any remaining references in code
+rm spec/lib/devtools/performance_profiler_middleware_spec.rb
 ```
 
-### Step 8: Test Thoroughly
+### Step 4: Test Thoroughly
 
-- Run full test suite
-- Run RuboCop with the new cop
-- Test performance profiler in development
-- Verify all rescue awareness checks pass
+```bash
+bundle install
+bundle exec rubocop
+# Verify performance profiler works in development
+```
+
+---
+
+## Versioning Strategy
+
+- **v0.1.0** - Initial release with rescue awareness and performance profiler
+- **v0.2.0** - Planned: Code quality tools (HAML validator, orphaned views)
+- **v0.3.0** - Planned: Documentation tools
+- **v1.0.0** - Stable release with comprehensive tooling
+
+Pre-1.0 versions may include breaking changes. Feedback from early adopters will guide API improvements.
 
 ---
 
 ## Contributing
 
-Future development will follow this roadmap:
+Future development will be guided by:
 
-1. Community feedback on v0.1.0
+1. Community feedback and pull requests
 2. Bug fixes and minor improvements
-3. Phase 4: Documentation tools
-4. Phase 5: Developer utilities
-5. Additional tools as requested by community
+3. Extraction of high-value, generic tools
+4. Maintaining backward compatibility when possible
 
 ---
 

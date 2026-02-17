@@ -22,10 +22,10 @@ Gem::Specification.new do |spec|
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.glob("lib/rtools/**/*") +
                Dir.glob("sig/**/*") +
-               Dir.glob("exe/*") +
+               Dir.glob("bin/*") +
                %w[README.md LICENSE.txt CHANGELOG.md lib/rtools.rb]
-  spec.bindir = "exe"
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+  spec.bindir = "bin"
+  spec.executables = spec.files.grep(%r{\Abin/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
   # Runtime dependencies - use pessimistic version constraint for better stability
