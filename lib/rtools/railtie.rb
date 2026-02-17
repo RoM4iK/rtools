@@ -4,15 +4,16 @@ module Rtools
   class Railtie < ::Rails::Railtie
     railtie_name :rtools
 
-    # Register the performance profiler middleware in development
-    initializer "rtools.performance_profiler" do |app|
-      if performance_profiler_enabled?
-        app.middleware.insert_before ActionDispatch::Static, Rtools::PerformanceProfilerMiddleware
-      end
+    # Register the performance profiler middleware BEFORE middleware stack is built
+    # This must run before :build_middleware_stack to avoid frozen array errors
+    initializer "rtools.performance_profiler", before: :build_middleware_stack do |app|
+      next unless performance_profiler_enabled?
+
+      app.middleware.use Rtools::PerformanceProfilerMiddleware
     end
 
-    # Mount the engine routes in development
-    initializer "rtools.mount_engine", after: :build_middleware_stack do |app|
+    # Mount the engine routes after routes are initialized
+    initializer "rtools.mount_engine", after: :add_routing_paths do |app|
       next unless Rails.env.development?
       next unless performance_profiler_enabled?
 

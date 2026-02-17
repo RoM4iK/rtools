@@ -22,7 +22,6 @@ Gem::Specification.new do |spec|
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.glob("lib/rtools/**/*") +
                Dir.glob("app/**/*") +
-               Dir.glob("config/**/*") +
                Dir.glob("sig/**/*") +
                Dir.glob("bin/*") +
                %w[README.md LICENSE.txt CHANGELOG.md lib/rtools.rb]
@@ -32,7 +31,7 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies - use pessimistic version constraint for better stability
   spec.add_dependency "rubocop", "~> 1.0"
-  spec.add_dependency "rails", "~> 6.0"
+  spec.add_dependency "rails", ">= 6.0"
 
   # Development dependencies
   spec.add_development_dependency "rake", "~> 13.0"
