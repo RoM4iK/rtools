@@ -27,6 +27,19 @@ module Rtools
       nil
     end
 
+    # Delegate missing methods to main app routes for URL generation
+    def method_missing(method, *args, &block)
+      if ::Rails.application.routes.url_helpers.respond_to?(method)
+        ::Rails.application.routes.url_helpers.send(method, *args)
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method, *)
+      ::Rails.application.routes.url_helpers.respond_to?(method) || super
+    end
+
     private
 
     def set_locale
