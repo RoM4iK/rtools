@@ -5,9 +5,8 @@ module Rtools
   class PerformanceProfilesController < ApplicationController
     layout "application"
 
-    # Skip authentication in development for easier access
-    skip_before_action :authenticate_user!, if: -> { Rails.env.development? && respond_to?(:authenticate_user!) }
-    skip_before_action :check_user_verification, if: -> { Rails.env.development? && respond_to?(:check_user_verification) }
+    # No authentication needed - this controller inherits from Rtools::ApplicationController
+    # which doesn't include Devise helpers, so we don't skip authenticate_user!
 
     before_action :ensure_development_environment
 
