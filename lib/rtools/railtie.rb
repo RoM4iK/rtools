@@ -17,7 +17,7 @@ module Rtools
       next unless Rails.env.development?
       next unless performance_profiler_enabled?
 
-      app.routes.append do
+      app.routes.draw do
         mount Rtools::Engine, at: "/dev"
       end
     end
