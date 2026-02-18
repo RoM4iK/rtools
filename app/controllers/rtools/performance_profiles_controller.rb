@@ -3,6 +3,8 @@
 # Controller for displaying performance profiles (development only)
 module Rtools
   class PerformanceProfilesController < ApplicationController
+    layout "application"
+
     # Skip authentication in development for easier access
     skip_before_action :authenticate_user!, if: -> { Rails.env.development? }
     skip_before_action :check_user_verification, if: -> { Rails.env.development? }

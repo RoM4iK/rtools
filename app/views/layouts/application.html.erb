@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Rtools Performance Profiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+    <style>
+      .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    </style>
+  </head>
+  <body class="bg-base-200 min-h-screen">
+    <div class="navbar bg-base-100 shadow-lg mb-6">
+      <div class="flex-1">
+        <a href="/" class="btn btn-ghost text-xl">
+          ← Back to App
+        </a>
+      </div>
+      <div class="flex-none">
+        <span class="text-sm opacity-70">Rtools Development Tools</span>
+      </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-6">
+      <%= yield %>
+    </main>
+
+    <script type="module">
+      // Simple copy to clipboard functionality
+      document.querySelectorAll('[data-copy-text-value]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const text = button.dataset.copyTextValue;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = button.textContent;
+            button.textContent = '✓';
+            setTimeout(() => button.textContent = originalText, 1500);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
