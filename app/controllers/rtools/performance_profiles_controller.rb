@@ -3,10 +3,8 @@
 # Controller for displaying performance profiles (development only)
 module Rtools
   class PerformanceProfilesController < ApplicationController
-    layout "application"
-
-    # No authentication needed - this controller inherits from Rtools::ApplicationController
-    # which doesn't include Devise helpers, so we don't skip authenticate_user!
+    # Use rtools own layout, not the main app's layout
+    layout "rtools/application"
 
     before_action :ensure_development_environment
 
