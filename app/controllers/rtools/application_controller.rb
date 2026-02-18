@@ -8,6 +8,25 @@ module Rtools
 
     before_action :set_locale
 
+    # Helper methods for the main app's layout
+    helper_method :current_user, :browser_device, :impersonating?, :impersonating_admin
+
+    def current_user
+      nil
+    end
+
+    def browser_device
+      nil
+    end
+
+    def impersonating?
+      false
+    end
+
+    def impersonating_admin
+      nil
+    end
+
     private
 
     def set_locale
