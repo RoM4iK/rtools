@@ -12,15 +12,6 @@ module Rtools
       app.middleware.use Rtools::PerformanceProfilerMiddleware
     end
 
-    # Mount the engine routes after routes are initialized
-    initializer "rtools.mount_engine", after: :add_routing_paths do |app|
-      next unless Rails.env.development?
-      next unless performance_profiler_enabled?
-
-      app.routes.draw do
-        mount Rtools::Engine, at: "/dev"
-      end
-    end
 
     # Configuration for the gem
     config.rtools = ActiveSupport::OrderedOptions.new
