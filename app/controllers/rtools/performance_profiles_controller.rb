@@ -5,9 +5,11 @@ module Rtools
   class PerformanceProfilesController < ::ApplicationController
     before_action :ensure_development_environment
 
-    # Skip authentication for development tools
-    skip_before_action :authenticate_user!, if: -> { Rails.env.development? }
-    skip_before_action :check_user_verification, if: -> { Rails.env.development? }
+    # Override public_controller? to skip authentication in development
+    def public_controller?
+      Rails.env.development? || super
+    end
+    private :public_controller?
 
     def index
       result = PerformanceProfileResultsService.call
