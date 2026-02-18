@@ -3,7 +3,9 @@
 module Rtools
   class Engine < ::Rails::Engine
     routes do
-      resources :performance_profiles, only: %i[index show], format: false
+      scope path: "/dev" do
+        resources :performance_profiles, only: %i[index show], format: false
+      end
     end
   end
 end
