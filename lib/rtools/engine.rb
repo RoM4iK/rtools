@@ -2,8 +2,6 @@
 
 module Rtools
   class Engine < ::Rails::Engine
-    isolate_namespace Rtools
-
     routes do
       resources :performance_profiles, only: %i[index show], format: false
     end

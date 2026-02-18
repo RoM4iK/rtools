@@ -2,11 +2,12 @@
 
 # Controller for displaying performance profiles (development only)
 module Rtools
-  class PerformanceProfilesController < ApplicationController
-    # Use rtools own layout, not the main app's layout
-    layout "rtools/application"
-
+  class PerformanceProfilesController < ::ApplicationController
     before_action :ensure_development_environment
+
+    # Skip authentication for development tools
+    skip_before_action :authenticate_user!, if: -> { Rails.env.development? }
+    skip_before_action :check_user_verification, if: -> { Rails.env.development? }
 
     def index
       result = PerformanceProfileResultsService.call
