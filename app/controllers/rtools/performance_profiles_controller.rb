@@ -3,7 +3,7 @@
 # Controller for displaying performance profiles (development only)
 module Rtools
   class PerformanceProfilesController < ApplicationController
-    layout 'application'
+    layout 'rtools/application'
 
     before_action :ensure_development_environment
 
