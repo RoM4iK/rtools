@@ -2,12 +2,12 @@
 
 # Controller for displaying performance profiles (development only)
 module Rtools
-  class PerformanceProfilesController < ApplicationController
+  class PerformanceProfilesController < ::ApplicationController
     layout 'application'
 
     before_action :ensure_development_environment
 
-    # This controller is always public in development (no authentication)
+    # This controller is always public (no authentication required)
     def public_controller?
       true
     end
