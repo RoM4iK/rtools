@@ -2,12 +2,14 @@
 
 # Controller for displaying performance profiles (development only)
 module Rtools
-  class PerformanceProfilesController < ::ApplicationController
+  class PerformanceProfilesController < ApplicationController
+    layout 'application'
+
     before_action :ensure_development_environment
 
-    # Override public_controller? to skip authentication in development
+    # This controller is always public in development (no authentication)
     def public_controller?
-      Rails.env.development? || super
+      true
     end
     private :public_controller?
 
