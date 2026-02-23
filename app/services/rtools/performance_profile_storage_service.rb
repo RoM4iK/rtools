@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Service for storing performance profiles to the filesystem (development only)
-class Dev::PerformanceProfileStorageService < BaseService
+class Rtools::PerformanceProfileStorageService < BaseService
   option :profile_data
 
   def call
